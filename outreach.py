@@ -1,23 +1,22 @@
 import smtplib
 import pandas as pd
 import time
+import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# ===================== CONFIGURATION =====================
-# Enter your email credentials below before running
-your_email = "your_email@gmail.com"         # <-- Add your email here
-your_password = "your_app_password_here"    # <-- Add your Gmail App Password here
+# --- CONFIGURATION (FROM ENVIRONMENT VARIABLES) ---
+your_email = os.getenv("SMTP_EMAIL")
+your_password = os.getenv("SMTP_PASSWORD")
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
-# ========================================================
 
 def send_outreach():
     try:
-        # 1. Load data from Excel file
+        # 1. Load data
         df = pd.read_excel('contacts.xlsx')
         
-        # 2. Setup SMTP Server
+        # 2. Setup Server
         print("Connecting to server...")
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()
@@ -32,6 +31,7 @@ def send_outreach():
             message = MIMEMultipart()
             message['From'] = f"Raj Mane <{your_email}>"
             message['To'] = recipient_email
+            
             message['Subject'] = f"Inquiry regarding {project} | Connection Request"
 
             body = (
@@ -50,11 +50,10 @@ def send_outreach():
             server.send_message(message)
             print(f"✅ [{index+1}/{len(df)}] Sent to {recipient_email}")
             
-            # Wait to avoid Gmail spam detection
             time.sleep(5)
 
         server.quit()
-        print("\n🚀 All emails sent successfully.")
+        print("\n🚀 All tasks complete. Check your 'Sent' folder.")
 
     except Exception as e:
         print(f"❌ Critical Error: {e}")
