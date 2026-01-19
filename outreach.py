@@ -2,14 +2,22 @@ import smtplib
 import pandas as pd
 import time
 import os
+from dotenv import load_dotenv
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+# Load environment variables from .env file
+load_dotenv()
 
 # --- CONFIGURATION (FROM ENVIRONMENT VARIABLES) ---
 your_email = os.getenv("SMTP_EMAIL")
 your_password = os.getenv("SMTP_PASSWORD")
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
+
+# Safety check
+if not your_email or not your_password:
+    raise Exception("SMTP credentials not found. Check your .env file or environment variables.")
 
 def send_outreach():
     try:
@@ -31,7 +39,6 @@ def send_outreach():
             message = MIMEMultipart()
             message['From'] = f"Raj Mane <{your_email}>"
             message['To'] = recipient_email
-            
             message['Subject'] = f"Inquiry regarding {project} | Connection Request"
 
             body = (
